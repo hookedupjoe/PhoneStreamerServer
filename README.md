@@ -9,10 +9,9 @@
 
 This is a generic example of using browser media devices, winsockets and WebRTC to create a peer to peer connection to stream video and data.
 
-* Websockets are used to make the real time connection.  
 * mediaDevices is used to read and feed the video and audio
-* WebRTC creates the peer to peer connection
-
+* Websockets used to setup up the WebRTC connections only
+* WebRTC used to create the peer to peer connection to stream video and/or audio
 
 Developer Note: The source code that does all the hard work is in this library.  There is a backend class used to create a "Websocket Room", that tracks who comes and goes and tell you about it.  That code can be seen here (very little code).
 [WebsocketRoom Code]https://github.com/hookedupjoe/mongino/blob/main/server-libs/lib_WebSocket.js

@@ -18,8 +18,8 @@ Developer Note: The source code that does all the hard work is in this library. 
 
 This is the Server side of the project.  The UI is in another repo and both should be used with Mongino.
 
-[UI Side Repo](https://github.com/hookedupjoe/PhoneStreamerUI/)
-[mongino repo](https://github.com/hookedupjoe/mongino)
+* [UI Side Repo](https://github.com/hookedupjoe/PhoneStreamerUI/)
+* [mongino repo](https://github.com/hookedupjoe/mongino)
 
 ### Usage
 This is designed to be used with the Mongino server development, hosting and deployment environment.  

@@ -16,8 +16,8 @@ This is a generic example of using browser media devices, winsockets and WebRTC 
 Developer Note: The source code that does all the hard work is in this simple code base.  There is a backend (Node) class used to create a "Websocket Room". That class tracks who comes and goes and tell you about it.  That code can be seen here (very little code).
 
 ### Quick Links To The Code
-[WebsocketRoom Code](https://github.com/hookedupjoe/mongino/blob/main/server-libs/lib_WebSocket.js)
-[Code that has the other logic (server endpoint)](https://github.com/hookedupjoe/PhoneStreamerServer/blob/main/appserver/actions/ws-main.js)
+* [WebsocketRoom Code](https://github.com/hookedupjoe/mongino/blob/main/server-libs/lib_WebSocket.js)
+* [Code that has the other logic (server endpoint)](https://github.com/hookedupjoe/PhoneStreamerServer/blob/main/appserver/actions/ws-main.js)
 
 This is the Server side of the project.  The UI is in another repo and both should be used with Mongino.
 

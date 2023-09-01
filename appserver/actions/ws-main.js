@@ -66,13 +66,10 @@ module.exports.setup = function setup(scope,options) {
         if( users[theData.to] ){
             var tmpUser = users[theData.to];
             var tmpSocketID = tmpUser.socketid;
-            //console.log('req to tmpSocketID',tmpSocketID);
             wsRoom.sendDataToClient(tmpSocketID, {action:'meetingrequest', offer: theData.offer, fromid: theWS.userid, fromname: tmpName, message: 'Meeting request from ' + tmpName})
         } else {
             wsRoom.sendDataToClient(theWS.id, {action:'meetingreply', fromid: theWS.userid, status: false, message: 'No longer available'})  
         }
-        //wsRoom.sendDataToClient(theWS.id, {action:'chat', fromid: tmpUserID, fromname: tmpName, message: tmpMsg, toname: tmpNameTo})
-
     }
     
     function sendChat(theWS, theData){

@@ -72,31 +72,7 @@ module.exports.setup = function setup(scope,options) {
         }
     }
     
-    function sendChat(theWS, theData){
-        try {
-            var tmpMsg = theData.message;
-            var tmpUserID = theWS.userid;
-            
-            //ToDo: add who it is to and vis
-            var tmpName = users[tmpUserID].profile.name;
-
-            var tmpNameTo = '';
-            if( users[tmpMsg.to] ){
-                var tmpUser = users[tmpMsg.to];
-                var tmpSocketID = tmpUser.socketid;
-                tmpNameTo = users[tmpMsg.to].profile.name
-            }
-            if( tmpMsg.to && (tmpMsg.vis == 'private')){
-                wsRoom.sendDataToClient(tmpSocketID, {action:'chat', fromid: tmpUserID, fromname: tmpName, message: tmpMsg, toname: tmpNameTo})
-                wsRoom.sendDataToClient(theWS.id, {action:'chat', fromid: tmpUserID, fromname: tmpName, message: tmpMsg, toname: tmpNameTo})
-            } else {
-                wsRoom.sendDataToAll({action:'chat', fromid: tmpUserID, fromname: tmpName, message: tmpMsg, toname: tmpNameTo})
-            }
-        } catch (error) {
-            console.error("Error in send chat",error);
-        }
-    }
-
+    
     function updateProfile(theWS, theData){
         var tmpSocketID = theWS.id;
         var tmpUserID = theData.userid;
@@ -128,8 +104,6 @@ module.exports.setup = function setup(scope,options) {
         if( tmpData.action ){
             if( tmpData.action == 'profile' && tmpData.profile){
                 updateProfile(ws,tmpData);
-            } else if( tmpData.action == 'chat'){
-                sendChat(ws,tmpData);
             } else if( tmpData.action == 'meeting'){
                 sendMeetingRequest(ws,tmpData);
             } else if( tmpData.action == 'meetingresponse'){
@@ -171,8 +145,8 @@ module.exports.setup = function setup(scope,options) {
         
         return wssMain;
     }
-    
 
+    //--- For a Winsock Endpoint - This is never run.
     var base = Route.prototype;
     //==== End of common setup - add special stuff below
     //--- must have a "run" method *** 
@@ -195,12 +169,7 @@ module.exports.setup = function setup(scope,options) {
 
         });
 
-
-
     }
-
-
-
 
 
 

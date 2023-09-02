@@ -1,6 +1,7 @@
 'use strict';
 const THIS_MODULE_NAME = 'ws-main';
 const THIS_MODULE_TITLE = 'Send and receive Websock data related to this applications core features';
+const THIS_CODE_NAME = 'PhoneStreamer'
 
 var isSetup = false;
 var wssMain = false;
@@ -11,13 +12,13 @@ var users = {};
 module.exports.setup = function setup(scope,options) {
     var config = scope;
     var $ = config.locals.$;
-    // var OPEN_STATE = $.ws.WebSocket.OPEN;
 
     function Route() {
         this.name = THIS_MODULE_NAME;
         this.title = THIS_MODULE_TITLE;
     }
 
+    //--- Get the data we want to sent to the clients
     function getPeopleSummary(){
         var tmpList = {};
         for( var aID in users ){
@@ -35,7 +36,25 @@ module.exports.setup = function setup(scope,options) {
         wsRoom.sendDataToAll({action:'people', people: getPeopleSummary()});
     }
 
-    function sendMeetingResponse(theWS, theData){
+    //--- Send a request to connect to the target client on behalf of the source client
+    function sendConnectRequest(theWS, theData){
+        var tmpName = '';
+        var tmpUserID = theWS.userid;
+        if( users[tmpUserID] ){
+            tmpName = users[tmpUserID].profile.name
+        }
+
+        if( users[theData.to] ){
+            var tmpUser = users[theData.to];
+            var tmpSocketID = tmpUser.socketid;
+            wsRoom.sendDataToClient(tmpSocketID, {action:'meetingrequest', offer: theData.offer, fromid: theWS.userid, fromname: tmpName, message: 'Meeting request from ' + tmpName})
+        } else {
+            wsRoom.sendDataToClient(theWS.id, {action:'meetingreply', fromid: theWS.userid, status: false, message: 'No longer available'})  
+        }
+    }
+    
+    //--- Send a connection response to the original source client on behalf of the target client
+    function sendConnectResponse(theWS, theData){
         var tmpMsg = theData.message || {};
         
         var tmpName = '';
@@ -52,27 +71,10 @@ module.exports.setup = function setup(scope,options) {
         } else {
             console.log('unknown user',tmpMsg)
         }
-
-        
     }
     
-    function sendMeetingRequest(theWS, theData){
-        var tmpName = '';
-        var tmpUserID = theWS.userid;
-        if( users[tmpUserID] ){
-            tmpName = users[tmpUserID].profile.name
-        }
-
-        if( users[theData.to] ){
-            var tmpUser = users[theData.to];
-            var tmpSocketID = tmpUser.socketid;
-            wsRoom.sendDataToClient(tmpSocketID, {action:'meetingrequest', offer: theData.offer, fromid: theWS.userid, fromname: tmpName, message: 'Meeting request from ' + tmpName})
-        } else {
-            wsRoom.sendDataToClient(theWS.id, {action:'meetingreply', fromid: theWS.userid, status: false, message: 'No longer available'})  
-        }
-    }
-    
-    
+    //--- When a client creates or updates the user information, a new profile is sent back to the server
+    //     we refresh the details and send new people list to clients
     function updateProfile(theWS, theData){
         var tmpSocketID = theWS.id;
         var tmpUserID = theData.userid;
@@ -91,11 +93,13 @@ module.exports.setup = function setup(scope,options) {
         resendPeople();
     }
     
+    //--- When a new client connects, create a new unique ID and send a welcome message along with current people list
     function onConnect(ws){
         ws.userid = $.ws.mgr.getUniqueID();        
         ws.send(JSON.stringify({action: 'welcome', userid: ws.userid, id: ws.id, people:getPeopleSummary()}))
     }
 
+    //--- When a socket is removed, clear the user and resend the people list to clients
     function onMessage(ws,data,isBinary){
         var tmpData = (''+data).trim();
         if( tmpData.startsWith('{')){
@@ -105,9 +109,9 @@ module.exports.setup = function setup(scope,options) {
             if( tmpData.action == 'profile' && tmpData.profile){
                 updateProfile(ws,tmpData);
             } else if( tmpData.action == 'meeting'){
-                sendMeetingRequest(ws,tmpData);
+                sendConnectRequest(ws,tmpData);
             } else if( tmpData.action == 'meetingresponse'){
-                sendMeetingResponse(ws,tmpData);
+                sendConnectResponse(ws,tmpData);
                 
             } else {
                 console.log('unknown action',tmpData.action);
@@ -115,10 +119,12 @@ module.exports.setup = function setup(scope,options) {
         }
     }
 
+    //--- The client responds to the welcome message that handles the initial adding of a person / client
     function onSocketAdd(theID){
         //--- placeholder
     }
 
+    //--- When a socket is removed, clear the user and resend the people list to clients
     function onSocketRemove(theID){
         if( clients[theID] ){
             var tmpUserID = clients[theID].userid || '';

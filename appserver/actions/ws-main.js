@@ -142,6 +142,22 @@ module.exports.setup = function setup(scope,options) {
     //--- When called by the Winsock protocol, the below code handles the response
     if( options && options.websocket === true ){
         if( !isSetup ){
+
+/**
+ * Main Entrypoint
+ * 
+ * This creates a new node.js library WebSocketServer
+ *  - noServer:true is used because we are fulfilling the websocket with an existing server enpoint
+ *     ... instead of creating a new WebSocket server.
+ *     ... (When using https, websockets must be wss, which is automatic in the client code)
+ *  
+ * This also creates a new WebSocketRoom, which is a simple control that tracks who comes and goes 
+ *   and tell you about it. Also sends along messages to handle and a message when it connects
+ * 
+ * Note: A quick link to that code can be found in the readme of this repo.
+ * 
+ */
+
             wssMain = new $.ws.WebSocketServer({ noServer: true });
             wsRoom = new $.ws.WebSocketRoom({name:THIS_CODE_NAME, server: wssMain, onConnect: onConnect, onMessage: onMessage, onSocketAdd: onSocketAdd, onSocketRemove: onSocketRemove, pingInterval:0 });
             console.log(THIS_CODE_NAME + ' created new websock room')

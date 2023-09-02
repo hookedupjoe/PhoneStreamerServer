@@ -139,20 +139,36 @@ module.exports.setup = function setup(scope,options) {
         }
     }
 
-    if( options.websocket === true ){
+    
+/**
+ * Main Entrypoint
+ * 
+ * This creates a new node.js library WebSocketServer
+ *  - noServer:true is used because we are fulfilling the websocket with an existing server enpoint
+ *     ... instead of creating a new WebSocket server.
+ *     ... (When using https, websockets must be wss, which is automatic in the client code)
+ *  
+ * This also creates a new WebSocketRoom, which is a simple control that tracks who comes and goes 
+ *   and tell you about it. Also sends along messages to handle and a message when it connects
+ * 
+ * Note: A quick link to that code can be found in the readme of this repo.
+ * 
+ */
+    if( options && options.websocket === true ){
 
         if( !isSetup ){
             wssMain = new $.ws.WebSocketServer({ noServer: true });
-            wsRoom = new $.ws.WebSocketRoom({name:'stage', server: wssMain, onConnect: onConnect, onMessage: onMessage, onSocketAdd: onSocketAdd, onSocketRemove: onSocketRemove, pingInterval:0 });
+            wsRoom = new $.ws.WebSocketRoom({name:THIS_CODE_NAME, server: wssMain, onConnect: onConnect, onMessage: onMessage, onSocketAdd: onSocketAdd, onSocketRemove: onSocketRemove, pingInterval:0 });
 
             isSetup = true;
-            console.log('Meeting Center created new websock room')
+            console.log(THIS_CODE_NAME + ' created new websock room')
         }
         
         return wssMain;
     }
 
-    //--- For a Winsock Endpoint - This is never run.
+     //--- When called by the Winsock protocol, the below code does not run
+    //--- When called as a normal endpoint, the winsock code DOES NOT run but instead the below code runs
     var base = Route.prototype;
     //==== End of common setup - add special stuff below
     //--- must have a "run" method *** 
@@ -164,7 +180,7 @@ module.exports.setup = function setup(scope,options) {
             try {
                 var tmpRet = {
                     status: true,
-                    query:req.query
+                    people: getPeopleSummary()
                 }
                 resolve(tmpRet);
             }
@@ -176,8 +192,6 @@ module.exports.setup = function setup(scope,options) {
         });
 
     }
-
-
 
 
 

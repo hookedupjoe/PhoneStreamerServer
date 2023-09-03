@@ -22,10 +22,10 @@ module.exports.setup = function setup(scope,options) {
     function getPeopleSummary(){
         var tmpList = {};
         for( var aID in users ){
-            var tmpPerson = users[aID];
-            if( tmpPerson.profile && tmpPerson.socketid ){
-                var tmpName = tmpPerson.profile.name || 'Anonymous';
-                var tmpUserID = tmpPerson.userid || 'Anonymous';
+            var tmpPerson = users[aID] || {};
+            if( tmpPerson.socketid ){
+                var tmpName = (tmpPerson.profile && tmpPerson.profile.name) || 'Host';
+                var tmpUserID = tmpPerson.userid || 'Host';
                 tmpList[aID] = {name:tmpName, userid: tmpUserID};
             }
         }
@@ -43,7 +43,7 @@ module.exports.setup = function setup(scope,options) {
         if( users[tmpUserID] ){
             tmpName = users[tmpUserID].profile.name
         }
-
+console.log('tmpName',tmpName,tmpUserID);
         if( users[theData.to] ){
             var tmpUser = users[theData.to];
             var tmpSocketID = tmpUser.socketid;

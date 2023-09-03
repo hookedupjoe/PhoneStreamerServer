@@ -1,6 +1,6 @@
 'use strict';
 const THIS_MODULE_NAME = 'ws-main';
-const THIS_MODULE_TITLE = 'Send and receive Websock data related to this applications core features';
+const THIS_MODULE_TITLE = 'Send and receive Websocket data related to this applications core features';
 const THIS_CODE_NAME = 'PhoneStreamer'
 
 var isSetup = false;
@@ -43,7 +43,6 @@ module.exports.setup = function setup(scope,options) {
         if( users[tmpUserID] ){
             tmpName = users[tmpUserID].profile.name
         }
-console.log('tmpName',tmpName,tmpUserID);
         if( users[theData.to] ){
             var tmpUser = users[theData.to];
             var tmpSocketID = tmpUser.socketid;
@@ -161,7 +160,7 @@ console.log('tmpName',tmpName,tmpUserID);
             wsRoom = new $.ws.WebSocketRoom({name:THIS_CODE_NAME, server: wssMain, onConnect: onConnect, onMessage: onMessage, onSocketAdd: onSocketAdd, onSocketRemove: onSocketRemove, pingInterval:0 });
 
             isSetup = true;
-            console.log(THIS_CODE_NAME + ' created new websock room')
+            console.log(THIS_CODE_NAME + ' created new websocket room')
         }
         
         return wssMain;
